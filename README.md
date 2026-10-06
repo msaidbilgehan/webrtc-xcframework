@@ -15,10 +15,17 @@ libwebrtc built from source for macOS on Apple silicon, packaged as an XCFramewo
 ```swift
 .binaryTarget(
     name: "WebRTC",
-    url: "https://github.com/msaidbilgehan/webrtc-xcframework/releases/download/155.8059.1/WebRTC.xcframework.zip",
-    checksum: "4e5a079de585e61384a647d82fdc12ae8bd15353d0cdca96992ec0cb2ddf717b"
+    url: "https://github.com/msaidbilgehan/webrtc-xcframework/releases/download/155.8059.2/WebRTC.xcframework.zip",
+    checksum: "6a2a9d92631daa4b2c44cead25b40421c078152a5d648f53809d3f93a4f3c9f9"
 )
 ```
+
+| Release | Changes from upstream |
+|---|---|
+| `155.8059.2` | 1–6 |
+| `155.8059.1` | 1–4 |
+
+Tags are `<milestone>.<branch>.<release>`: the last part grows when the patch set changes on the same branch.
 
 The module is `WebRTC`; the prefix is defined in the framework's `RTCMacros.h`, so `import WebRTC` sees the prefixed names.
 
@@ -30,6 +37,12 @@ The module is `WebRTC`; the prefix is defined in the framework's `RTCMacros.h`, 
 3. The macOS framework bundle carries its public headers (upstream ships only the umbrella header) and places
    `PrivacyInfo.xcprivacy` in `Versions/A/Resources`.
 4. The `PB` prefix is defined in `RTCMacros.h` instead of a compiler define, so clients that import the framework see it.
+5. In the application limited region an over-use episode lowers the delay-based estimate at most once, to no less than
+   `floor` times the estimate at its first back-off, and the application-limited throughput is not fed to the link capacity
+   estimate. Upstream backs off to 0.85 times the acknowledged throughput, which on a still screen is a fraction of the
+   link. Behind the field trial `WebRTC-Bwe-AlrBoundedBackoff/Enabled,floor:0.5/`; off by default.
+6. `PBRTCPeerConnectionFactory` gains `initWithEncoderFactory:decoderFactory:fieldTrials:`, so field trials are given per
+   factory instead of through the deprecated process-wide `RTCInitFieldTrialDictionary`.
 
 ## Build configuration
 
